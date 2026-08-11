@@ -1,0 +1,53 @@
+<svg width="1600" height="1131" viewBox="0 0 1600 1131" xmlns="http://www.w3.org/2000/svg" font-family="Georgia, 'Times New Roman', serif">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F8FAFC"/>
+      <stop offset="100%" stop-color="#EEF2FF"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+    <linearGradient id="seal" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4F46E5"/>
+      <stop offset="100%" stop-color="#7C3AED"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="1131" fill="url(#bg)"/>
+
+  <rect x="40" y="40" width="1520" height="1051" fill="none" stroke="url(#accent)" stroke-width="4"/>
+  <rect x="58" y="58" width="1484" height="1015" fill="none" stroke="#C7D2FE" stroke-width="1.5"/>
+
+  <rect x="40" y="40" width="220" height="6" fill="url(#accent)"/>
+  <rect x="1340" y="1085" width="220" height="6" fill="url(#accent)"/>
+
+  <text x="800" y="200" text-anchor="middle" font-size="34" font-weight="700" letter-spacing="10" fill="#4F46E5" font-family="Arial, sans-serif">EVENTRA</text>
+
+  <text x="800" y="300" text-anchor="middle" font-size="56" font-weight="700" letter-spacing="4" fill="#111827">CERTIFICATE OF COMPLETION</text>
+  <text x="800" y="345" text-anchor="middle" font-size="20" fill="#6B7280" font-family="Arial, sans-serif" letter-spacing="2">ใบประกาศนียบัตรฉบับตัวอย่าง</text>
+
+  <text x="800" y="430" text-anchor="middle" font-size="20" fill="#6B7280" font-family="Arial, sans-serif">This certificate is proudly presented to</text>
+
+  <text x="800" y="530" text-anchor="middle" font-size="64" fill="#1F2937" font-style="italic">Attendee Name</text>
+  <line x1="500" y1="565" x2="1100" y2="565" stroke="#C7D2FE" stroke-width="2"/>
+
+  <text x="800" y="620" text-anchor="middle" font-size="20" fill="#6B7280" font-family="Arial, sans-serif">for successfully completing the seminar</text>
+  <text x="800" y="665" text-anchor="middle" font-size="30" font-weight="700" fill="#4F46E5" font-family="Arial, sans-serif">Event Management Masterclass 2026</text>
+  <text x="800" y="705" text-anchor="middle" font-size="18" fill="#6B7280" font-family="Arial, sans-serif">Organized on EVENTRA &#8226; 1 January 2026</text>
+
+  <!-- Seal -->
+  <circle cx="800" cy="830" r="70" fill="url(#seal)"/>
+  <circle cx="800" cy="830" r="58" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="4 4"/>
+  <text x="800" y="822" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF" font-family="Arial, sans-serif">EVENTRA</text>
+  <text x="800" y="844" text-anchor="middle" font-size="12" fill="#FFFFFF" font-family="Arial, sans-serif" letter-spacing="1">CERTIFIED</text>
+
+  <!-- Signature lines -->
+  <line x1="260" y1="950" x2="560" y2="950" stroke="#9CA3AF" stroke-width="1.5"/>
+  <text x="410" y="980" text-anchor="middle" font-size="18" fill="#374151" font-family="Arial, sans-serif">Organizer Signature</text>
+
+  <line x1="1040" y1="950" x2="1340" y2="950" stroke="#9CA3AF" stroke-width="1.5"/>
+  <text x="1190" y="980" text-anchor="middle" font-size="18" fill="#374151" font-family="Arial, sans-serif">Date Issued</text>
+
+  <text x="800" y="1055" text-anchor="middle" font-size="14" fill="#9CA3AF" font-family="Arial, sans-serif" letter-spacing="1">Certificate ID: EVT-CERT-SAMPLE-000001 &#8226; Verify at eventra.app/verify</text>
+</svg>
