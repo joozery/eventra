@@ -24,7 +24,7 @@ export function NewsAndAnnouncements() {
             <Link
               key={article.id}
               href={`/articles/${article.slug}`}
-              className="group flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-lg hover:shadow-indigo-950/5"
+              className="group flex flex-col overflow-hidden rounded-sm border border-border bg-card transition-shadow hover:shadow-lg hover:shadow-indigo-950/5"
             >
               <div
                 className={`relative aspect-[16/10] overflow-hidden bg-gradient-to-br p-4 ${article.gradient}`}
@@ -67,9 +67,9 @@ export function NewsAndAnnouncements() {
           {announcements.map((announcement) => (
             <div
               key={announcement.id}
-              className="flex flex-col gap-3 rounded-lg border border-border bg-card p-4"
+              className="flex flex-col gap-3 rounded-sm border border-border bg-card p-4"
             >
-              <span className="flex size-11 shrink-0 items-center justify-center rounded-md bg-gradient-to-br from-amber-500 to-orange-500 text-white">
+              <span className="flex size-11 shrink-0 items-center justify-center rounded-sm bg-gradient-to-br from-amber-500 to-orange-500 text-white">
                 <Megaphone className="size-5" />
               </span>
               <div>

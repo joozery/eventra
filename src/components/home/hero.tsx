@@ -3,13 +3,20 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { CalendarDays, Search } from "lucide-react";
+import { format } from "date-fns";
+import { th } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 const slides = ["/coverhero/cover.png", "/coverhero/coverevent.jpg"];
 
 export function Hero() {
   const [active, setActive] = useState(0);
+  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const id = window.setInterval(() => {
@@ -34,23 +41,38 @@ export function Hero() {
             )}
           />
         ))}
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-black/40" />
+
       </div>
 
       <div className="relative mx-auto flex max-w-7xl flex-col items-center px-4 py-24 text-center sm:px-6 sm:py-32 lg:px-8">
-        <h1 className="max-w-3xl text-balance text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl">
+        <motion.h1
+          initial={{ opacity: 0, y: 28 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.65, ease: [0.22, 1, 0.36, 1] }}
+          className="max-w-3xl text-balance text-4xl font-bold tracking-tight text-white sm:text-5xl lg:text-6xl"
+        >
           Discover events{" "}
           <span className="bg-gradient-to-r from-indigo-300 via-purple-300 to-fuchsia-300 bg-clip-text text-transparent">
             you&apos;ll love
           </span>
           .
-        </h1>
-        <p className="mt-5 max-w-xl text-balance text-lg text-white/80">
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.12 }}
+          className="mt-5 max-w-xl text-balance text-lg text-white/80"
+        >
           ค้นหาและจองงานอีเวนต์สุดพิเศษที่เกิดขึ้นรอบตัวคุณ ครบทั้งดนตรี
           ธุรกิจ กีฬา และศิลปะ
-        </p>
+        </motion.p>
 
-        <form className="mt-10 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-border bg-card/95 p-2 shadow-lg shadow-black/10 backdrop-blur-sm sm:flex-row sm:items-center">
+        <motion.form
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: 0.24 }}
+          className="mt-10 flex w-full max-w-2xl flex-col gap-2 rounded-2xl border border-border bg-card/95 p-2 shadow-lg shadow-black/10 backdrop-blur-sm sm:flex-row sm:items-center"
+        >
           <div className="flex flex-1 items-center gap-2 rounded-xl px-3 py-2.5">
             <Search className="size-4 shrink-0 text-muted-foreground" />
             <input
@@ -60,14 +82,21 @@ export function Hero() {
             />
           </div>
           <div className="hidden h-6 w-px bg-border sm:block" />
-          <div className="flex items-center gap-2 rounded-xl px-3 py-2.5 sm:w-44">
-            <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="วันที่"
-              className="w-full bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground"
-            />
-          </div>
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger className="flex items-center gap-2 rounded-xl px-3 py-2.5 sm:w-44 text-left">
+              <CalendarDays className="size-4 shrink-0 text-muted-foreground" />
+              <span className={cn("w-full bg-transparent text-sm outline-none", date ? "text-foreground" : "text-muted-foreground")}>
+                {date ? format(date, "d MMM yyyy", { locale: th }) : "วันที่"}
+              </span>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="start">
+              <Calendar
+                mode="single"
+                selected={date}
+                onSelect={(d) => { setDate(d); setOpen(false); }}
+              />
+            </PopoverContent>
+          </Popover>
           <Button
             type="submit"
             size="lg"
@@ -76,9 +105,14 @@ export function Hero() {
             <Search className="size-4" />
             ค้นหา
           </Button>
-        </form>
+        </motion.form>
 
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-white/70">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.38 }}
+          className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-sm text-white/70"
+        >
           <span>ยอดนิยม:</span>
           {["คอนเสิร์ต", "สัมมนาธุรกิจ", "มาราธอน", "เทศกาลอาหาร"].map((tag) => (
             <span
@@ -88,7 +122,7 @@ export function Hero() {
               {tag}
             </span>
           ))}
-        </div>
+        </motion.div>
 
         <div className="mt-10 flex items-center gap-1.5">
           {slides.map((_, index) => (

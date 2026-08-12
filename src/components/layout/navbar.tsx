@@ -3,18 +3,38 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { Menu, Search, X } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { Award, LogOut, Menu, Receipt, Search, Ticket, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { useLocale } from "@/components/providers/locale-provider";
 import { cn } from "@/lib/utils";
 
+type SessionUser = { id: string; email: string; name: string; avatarUrl?: string | null } | null;
+
 export function Navbar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [user, setUser] = useState<SessionUser>(null);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
+  const router = useRouter();
   const { t } = useLocale();
+
+  useEffect(() => {
+    fetch("/api/auth/me")
+      .then((r) => r.json())
+      .then((d) => setUser(d.user ?? null))
+      .catch(() => setUser(null));
+  }, [pathname]);
+
+  async function handleLogout() {
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    setUserMenuOpen(false);
+    router.push("/");
+    router.refresh();
+  }
 
   const navLinks = [
     { href: "/events", label: t.nav.events },
@@ -80,15 +100,89 @@ export function Navbar() {
             <Search className="size-[18px]" />
           </Link>
           <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="lg"
-            className="ml-1 rounded-full"
-            nativeButton={false}
-            render={<Link href="/auth/login" />}
-          >
-            {t.nav.login}
-          </Button>
+          {user ? (
+            <div className="relative ml-1">
+              <button
+                type="button"
+                onClick={() => setUserMenuOpen((v) => !v)}
+                className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 transition-colors hover:bg-muted"
+              >
+                <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-sm font-semibold text-white">
+                  {user.avatarUrl
+                    // eslint-disable-next-line @next/next/no-img-element
+                    ? <img src={user.avatarUrl} alt={user.name} className="size-full object-cover" />
+                    : user.name.charAt(0).toUpperCase()}
+                </span>
+                <span className="max-w-28 truncate text-sm font-medium text-foreground">
+                  {user.name}
+                </span>
+              </button>
+              {userMenuOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setUserMenuOpen(false)} />
+                  <div className="absolute right-0 z-50 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-card shadow-lg shadow-black/5">
+                    <div className="border-b border-border px-4 py-3">
+                      <p className="truncate text-sm font-medium text-foreground">{user.name}</p>
+                      <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                    </div>
+                    <div className="p-1">
+                      <Link
+                        href="/account"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
+                      >
+                        <User className="size-4 text-muted-foreground" />
+                        บัญชีของฉัน
+                      </Link>
+                      <Link
+                        href="/account/tickets"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
+                      >
+                        <Ticket className="size-4 text-muted-foreground" />
+                        ตั๋วของฉัน
+                      </Link>
+                      <Link
+                        href="/account/orders"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
+                      >
+                        <Receipt className="size-4 text-muted-foreground" />
+                        คำสั่งซื้อของฉัน
+                      </Link>
+                      <Link
+                        href="/account/certificates"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
+                      >
+                        <Award className="size-4 text-muted-foreground" />
+                        ใบประกาศนียบัตรของฉัน
+                      </Link>
+                      <div className="my-1 border-t border-border" />
+                      <button
+                        type="button"
+                        onClick={handleLogout}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                      >
+                        <LogOut className="size-4" />
+                        ออกจากระบบ
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ) : (
+            <Button
+              variant="ghost"
+              size="lg"
+              className="ml-1 rounded-full"
+              nativeButton={false}
+              render={<Link href="/auth/login" />}
+            >
+              {t.nav.login}
+            </Button>
+          )}
           <Button
             size="lg"
             className="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm shadow-indigo-600/20 transition-colors hover:from-indigo-700 hover:to-purple-700 hover:bg-none"
@@ -144,15 +238,72 @@ export function Navbar() {
             </Link>
           </nav>
           <div className="mt-3 flex flex-col gap-2 border-t border-border pt-3">
-            <Button
-              variant="outline"
-              size="lg"
-              className="rounded-full"
-              nativeButton={false}
-              render={<Link href="/auth/login" />}
-            >
-              {t.nav.login}
-            </Button>
+            {user ? (
+              <>
+                <div className="flex items-center gap-3 rounded-lg bg-muted/50 px-3 py-2.5">
+                  <span className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-indigo-600 to-purple-600 text-sm font-semibold text-white">
+                    {user.avatarUrl
+                      // eslint-disable-next-line @next/next/no-img-element
+                      ? <img src={user.avatarUrl} alt={user.name} className="size-full object-cover" />
+                      : user.name.charAt(0).toUpperCase()}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-foreground">{user.name}</p>
+                    <p className="truncate text-xs text-muted-foreground">{user.email}</p>
+                  </div>
+                </div>
+                <Link
+                  href="/account"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <User className="size-4 text-muted-foreground" />
+                  บัญชีของฉัน
+                </Link>
+                <Link
+                  href="/account/tickets"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <Ticket className="size-4 text-muted-foreground" />
+                  ตั๋วของฉัน
+                </Link>
+                <Link
+                  href="/account/orders"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <Receipt className="size-4 text-muted-foreground" />
+                  คำสั่งซื้อของฉัน
+                </Link>
+                <Link
+                  href="/account/certificates"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <Award className="size-4 text-muted-foreground" />
+                  ใบประกาศนียบัตรของฉัน
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30"
+                >
+                  <LogOut className="size-4" />
+                  ออกจากระบบ
+                </button>
+              </>
+            ) : (
+              <Button
+                variant="outline"
+                size="lg"
+                className="rounded-full"
+                nativeButton={false}
+                render={<Link href="/auth/login" />}
+              >
+                {t.nav.login}
+              </Button>
+            )}
             <Button
               size="lg"
               className="rounded-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 hover:bg-none"

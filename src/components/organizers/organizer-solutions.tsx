@@ -203,11 +203,7 @@ export function OrganizerSolutions() {
 
       <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         <div className="mb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
-            <Layers className="size-3.5" />
-            Product Journey
-          </span>
-          <h2 className="mt-4 text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
+          <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
             ครบทุกขั้นตอนของอีเวนต์
           </h2>
           <p className="mt-1 text-muted-foreground">
@@ -216,7 +212,7 @@ export function OrganizerSolutions() {
         </div>
 
         <Tabs defaultValue={phases[0].id} className="items-center">
-          <TabsList className="h-auto flex-wrap justify-center gap-1 rounded-full bg-muted p-1.5">
+          <TabsList className="h-auto flex-wrap justify-center gap-1 rounded-2xl bg-muted p-1.5">
             {phases.map((phase) => (
               <TabsTrigger
                 key={phase.id}
@@ -233,11 +229,11 @@ export function OrganizerSolutions() {
               <p className="mt-6 text-center text-sm text-muted-foreground">
                 {phase.description}
               </p>
-              <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+              <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {phase.features.map((feature) => (
                   <div
                     key={feature.label}
-                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-shadow hover:shadow-md hover:shadow-indigo-950/5"
+                    className="flex items-center gap-3 rounded-xl border border-border bg-card p-3 sm:p-4 transition-shadow hover:shadow-md hover:shadow-indigo-950/5"
                   >
                     <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-600 to-purple-600 text-white">
                       <feature.icon className="size-4" />
@@ -264,18 +260,8 @@ export function OrganizerSolutions() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-5 overflow-hidden rounded-2xl border border-border bg-card shadow-sm md:grid-cols-2">
-            <div className="relative flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600 p-8">
-              <div className="overflow-hidden rounded-lg shadow-2xl ring-1 ring-white/20">
-                {/* eslint-disable-next-line @next/next/no-img-element -- static SVG preview, next/image blocks local SVGs without extra config */}
-                <img
-                  src="/certificates/sample-certificate.svg"
-                  alt="ตัวอย่างใบ Certificate จาก EVENTRA"
-                  className="w-full"
-                />
-              </div>
-            </div>
-            <div className="flex flex-col justify-center gap-3 p-6 sm:p-8">
+          <div className="grid grid-cols-1 overflow-hidden rounded-2xl border border-border bg-card shadow-sm md:grid-cols-2">
+            <div className="flex flex-col justify-center gap-3 p-6 sm:p-8 md:order-2">
               <span className="flex w-fit items-center gap-1.5 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300">
                 <Award className="size-3.5" />
                 Certificate
@@ -287,11 +273,11 @@ export function OrganizerSolutions() {
                 พร้อมลายเซ็นดิจิทัลและรหัส Certificate ID
                 ที่ตรวจสอบย้อนกลับได้ ออกให้ผู้เข้าร่วมสัมมนาอัตโนมัติทันทีที่งานจบ
               </p>
-              <div className="mt-2 flex flex-wrap gap-3">
+              <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
                 <a
                   href="/certificates/sample-certificate.svg"
                   download
-                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-sm font-medium text-white shadow-sm shadow-indigo-600/20 transition-opacity hover:opacity-90"
+                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-4 text-sm font-medium text-white shadow-sm shadow-indigo-600/20 transition-opacity hover:opacity-90 sm:w-auto"
                 >
                   <Download className="size-4" />
                   ดาวน์โหลดใบ Certificate ตัวอย่าง
@@ -300,11 +286,21 @@ export function OrganizerSolutions() {
                   href="/certificates/sample-certificate.svg"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+                  className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-xl border border-border px-4 text-sm font-medium text-foreground transition-colors hover:bg-muted sm:w-auto"
                 >
                   <Eye className="size-4" />
                   ดูตัวอย่างเต็ม
                 </a>
+              </div>
+            </div>
+            <div className="relative flex items-center justify-center bg-gradient-to-br from-indigo-600 to-purple-600 p-8 md:order-1">
+              <div className="overflow-hidden rounded-lg shadow-2xl ring-1 ring-white/20">
+                {/* eslint-disable-next-line @next/next/no-img-element -- static SVG preview, next/image blocks local SVGs without extra config */}
+                <img
+                  src="/certificates/sample-certificate.svg"
+                  alt="ตัวอย่างใบ Certificate จาก EVENTRA"
+                  className="w-full"
+                />
               </div>
             </div>
           </div>

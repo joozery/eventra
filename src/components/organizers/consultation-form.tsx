@@ -143,7 +143,7 @@ export function ConsultationForm() {
                 <Label>ประเภทงานที่สนใจ</Label>
                 <Select
                   value={eventType}
-                  onValueChange={(value) => setEventType(value as string)}
+                  onValueChange={(value: string) => setEventType(value)}
                 >
                   <SelectTrigger className="h-11 w-full rounded-xl">
                     <SelectValue placeholder="เลือกประเภทงาน" />

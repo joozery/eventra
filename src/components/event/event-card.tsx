@@ -41,7 +41,7 @@ export function EventCard({ event }: { event: MockEvent }) {
         <div className="flex flex-col gap-1 text-xs text-muted-foreground">
           <span className="flex items-center gap-1.5">
             <Calendar className="size-3.5 shrink-0" />
-            {event.date} · {event.time}
+            {event.endDate ? `${event.date} – ${event.endDate}` : `${event.date} · ${event.time}`}
           </span>
           <span className="flex items-center gap-1.5">
             <MapPin className="size-3.5 shrink-0" />

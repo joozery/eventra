@@ -37,7 +37,7 @@ export function EventGallery({
 
       <Dialog
         open={openIndex !== null}
-        onOpenChange={(open) => {
+        onOpenChange={(open: boolean) => {
           if (!open) setOpenIndex(null);
         }}
       >

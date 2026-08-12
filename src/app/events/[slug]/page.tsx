@@ -4,8 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  Building2,
   Calendar,
+  ChevronRight,
   MapPin,
   PartyPopper,
   Users,
@@ -13,10 +13,28 @@ import {
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { EventCard } from "@/components/event/event-card";
-import { TicketSelector } from "@/components/events/ticket-selector";
+import { TicketWidget } from "@/components/events/ticket-widget";
 import { MerchandiseSection } from "@/components/events/merchandise-section";
 import { EventGallery } from "@/components/events/event-gallery";
 import { allEvents, getEventBySlug, slugify } from "@/lib/mock-data";
+import { EventSchedule } from "@/components/events/event-schedule";
+
+const ORGANIZER_GRADIENTS = [
+  "from-indigo-500 to-purple-600",
+  "from-rose-500 to-pink-600",
+  "from-amber-500 to-orange-600",
+  "from-teal-500 to-emerald-600",
+  "from-sky-500 to-blue-600",
+  "from-violet-500 to-fuchsia-600",
+  "from-green-500 to-teal-600",
+  "from-red-500 to-rose-600",
+];
+
+function organizerGradient(name: string) {
+  let hash = 0;
+  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) & 0xffff;
+  return ORGANIZER_GRADIENTS[hash % ORGANIZER_GRADIENTS.length];
+}
 
 export function generateStaticParams() {
   return allEvents.map((event) => ({ slug: event.slug }));
@@ -53,7 +71,7 @@ export default async function EventDetailPage({
     <div className="flex min-h-full flex-1 flex-col">
       <Navbar />
       <main className="flex-1">
-        <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-8 pb-28 sm:px-6 lg:px-8 lg:pb-8">
           <Link
             href="/events"
             className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
@@ -94,7 +112,9 @@ export default async function EventDetailPage({
               <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm text-muted-foreground">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="size-4 shrink-0" />
-                  {event.date} · {event.time}
+                  {event.endDate
+                    ? `${event.date} — ${event.endDate}`
+                    : `${event.date} · ${event.time}`}
                 </span>
                 <span className="flex items-center gap-1.5">
                   <MapPin className="size-4 shrink-0" />
@@ -108,10 +128,17 @@ export default async function EventDetailPage({
 
               <Link
                 href={`/organizers/${slugify(event.organizer)}`}
-                className="mt-4 inline-flex items-center gap-2 rounded-full border border-border px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                className="group mt-5 flex w-full items-center gap-3.5 rounded-2xl border border-border bg-card p-3.5 transition-colors hover:bg-muted/50"
               >
-                <Building2 className="size-3.5" />
-                จัดโดย {event.organizer}
+                {/* Logo avatar */}
+                <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br text-base font-bold text-white shadow-sm ${organizerGradient(event.organizer)}`}>
+                  {event.organizer.slice(0, 2).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[11px] text-muted-foreground">ผู้จัดงาน</p>
+                  <p className="truncate text-sm font-semibold text-foreground">{event.organizer}</p>
+                </div>
+                <ChevronRight className="size-4 shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
               </Link>
 
               <div className="mt-8 border-t border-border pt-8">
@@ -120,8 +147,8 @@ export default async function EventDetailPage({
                 </h2>
                 <p className="mt-3 leading-relaxed text-muted-foreground">
                   ร่วมเป็นส่วนหนึ่งของ &ldquo;{event.title}&rdquo; งานอีเวนต์หมวด
-                  {event.category}ที่ไม่ควรพลาด จัดขึ้นวันที่ {event.date}{" "}
-                  เวลา {event.time} ณ {event.location} เตรียมพบกับบรรยากาศสุดพิเศษ
+                  {event.category}ที่ไม่ควรพลาด จัดขึ้น{event.endDate ? `วันที่ ${event.date} — ${event.endDate}` : `วันที่ ${event.date} เวลา ${event.time}`}{" "}
+                  ณ {event.location} เตรียมพบกับบรรยากาศสุดพิเศษ
                   พร้อมกิจกรรมที่คัดสรรมาเพื่อผู้เข้าร่วมงานทุกคนโดยเฉพาะ
                   จองบัตรตั้งแต่วันนี้เพื่อไม่ให้พลาดที่นั่ง
                 </p>
@@ -129,6 +156,20 @@ export default async function EventDetailPage({
                   <EventGallery images={event.gallery} title={event.title} />
                 )}
               </div>
+
+              {event.schedule && event.schedule.length > 0 && (
+                <div className="mt-8 border-t border-border pt-8">
+                  <h2 className="text-lg font-semibold text-foreground">
+                    ตารางกิจกรรม
+                  </h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    กำหนดการ {event.schedule.length} วัน — อาจมีการเปลี่ยนแปลงตามความเหมาะสม
+                  </p>
+                  <div className="mt-4">
+                    <EventSchedule schedule={event.schedule} />
+                  </div>
+                </div>
+              )}
 
               <div className="mt-8 border-t border-border pt-8">
                 <h2 className="text-lg font-semibold text-foreground">
@@ -159,7 +200,7 @@ export default async function EventDetailPage({
             </div>
 
             <div className="lg:sticky lg:top-24 lg:self-start">
-              <TicketSelector slug={event.slug} basePrice={event.price} />
+              <TicketWidget slug={event.slug} basePrice={event.price} schedule={event.schedule} />
             </div>
           </div>
 

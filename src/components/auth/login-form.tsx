@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { SocialLoginButtons } from "@/components/auth/social-login-buttons";
-import { isEmailRegistered } from "@/lib/mock-auth";
 
 type Step = "email" | "password";
 
@@ -20,20 +19,55 @@ export function LoginForm() {
   const [email, setEmail] = useState(searchParams.get("email") ?? "");
   const [showPassword, setShowPassword] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  function handleContinue(event: React.FormEvent<HTMLFormElement>) {
+  async function handleContinue(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (isEmailRegistered(email)) {
-      setStep("password");
-    } else {
-      router.push(`/auth/register?email=${encodeURIComponent(email)}`);
+    setSubmitting(true);
+    setError("");
+    try {
+      const res = await fetch("/api/auth/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.exists) {
+        setStep("password");
+      } else {
+        router.push(`/auth/register?email=${encodeURIComponent(email)}`);
+      }
+    } catch {
+      setError("เกิดข้อผิดพลาด กรุณาลองใหม่");
+    } finally {
+      setSubmitting(false);
     }
   }
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setSubmitting(true);
-    window.setTimeout(() => setSubmitting(false), 800);
+    setError("");
+    const form = event.currentTarget;
+    const password = (form.elements.namedItem("password") as HTMLInputElement).value;
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "เกิดข้อผิดพลาด");
+        return;
+      }
+      router.push("/");
+      router.refresh();
+    } catch {
+      setError("เกิดข้อผิดพลาด กรุณาลองใหม่");
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   if (step === "email") {
@@ -70,10 +104,12 @@ export function LoginForm() {
           <Button
             type="submit"
             size="lg"
+            disabled={submitting}
             className="h-11 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-sm shadow-indigo-600/20 hover:from-indigo-700 hover:to-purple-700 hover:bg-none"
           >
-            ถัดไป
+            {submitting ? "กำลังตรวจสอบ..." : "ถัดไป"}
           </Button>
+          {error && <p className="text-center text-sm text-red-500">{error}</p>}
         </form>
       </div>
     );
@@ -161,6 +197,7 @@ export function LoginForm() {
         >
           {submitting ? "กำลังเข้าสู่ระบบ..." : "เข้าสู่ระบบ"}
         </Button>
+        {error && <p className="text-center text-sm text-red-500">{error}</p>}
       </form>
     </div>
   );
