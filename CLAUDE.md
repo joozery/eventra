@@ -32,6 +32,10 @@ npx shadcn@latest add <component>   # writes into src/components/ui/
 
 Installed primitives: `button`, `card`, `dialog`, `dropdown-menu`, `input`, `label`, `select`, `separator`, `tabs`, `textarea`, plus a hand-written `pagination.tsx` (page-number nav, not from the registry) shared by every paginated list. `src/lib/utils.ts` exports `cn()` (clsx + tailwind-merge) used everywhere for conditional class merging.
 
+**Base UI `DialogTrigger` gotcha**: when using `render={<span />}` or any non-`<button>` element, add `nativeButton={false}` to suppress the accessibility warning. Dialog state is typically controlled (`open`/`onOpenChange`) — see `src/components/organizer/dashboard/support-dialog.tsx` for the canonical pattern.
+
+**Toast system**: `src/components/ui/toast-provider.tsx` exports `ToastProvider` (mounted in `src/app/layout.tsx`) and `useToast()` → `{ success, error, warning, info, toast }`. Use this for all user-facing feedback — do not build inline success/error states inside forms.
+
 ### Design tokens
 
 All brand colors, radii, and the dark-mode variant live in `src/app/globals.css` as OKLCH CSS custom properties, mapped into Tailwind v4 via `@theme inline`. Radius utilities are scaled off one `--radius` var (`--radius-sm` … `--radius-4xl`). Dark mode is a `.dark` class variant, not `prefers-color-scheme`. Prefer the existing gradient tokens (e.g. `from-indigo-600 to-purple-600`) over inventing new brand colors — nearly every gradient/ghost-icon/dot-pattern placeholder in the app reuses the same handful of combinations.
@@ -40,9 +44,22 @@ All brand colors, radii, and the dark-mode variant live in `src/app/globals.css`
 
 `src/lib/i18n.ts` holds per-locale dictionaries (`th`/`en`/`zh`/`ja`/`ko`) and `src/components/providers/locale-provider.tsx` is a client Context provider (persists choice to `localStorage`, wraps the app in `src/app/layout.tsx`) exposing `useLocale()` → `{ locale, setLocale, t }`. There is no routing per-locale (no `/en/...` paths). Only the navbar consumes `t`; the rest of the site's copy is hardcoded Thai — follow the existing dictionary shape in `i18n.ts` if extending translations rather than introducing a new i18n mechanism.
 
-### Mock data is the only data layer
+### Two separate data layers — public mock data vs. organizer fs/DB data
 
-`src/lib/mock-data.ts` is the single source for all content and is large — read it before assuming a shape. Key entities and derived helpers:
+The app has two completely separate data systems:
+
+1. **Public content** (`src/lib/mock-data.ts`) — static events, articles, merchandise, organizers for the public-facing site. Read at build/request time, never written.
+
+2. **Organizer-created data** — written at runtime via API routes, persisted in two places:
+   - **Filesystem JSON** under `data/` (git-ignored): `data/user-events.json` (organizer events via `src/lib/events-store.ts`), `data/forms.json` (registration forms via `src/lib/forms-store.ts`), `data/registrations.json` (via `src/lib/registrations-store.ts`).
+   - **MongoDB** (`src/lib/mongodb.ts`, db: `eventradev`): used by auth routes (`/api/auth/*`) for user accounts, passwords (bcryptjs), and JWT sessions (jose). Env var: `MONGODB_URI`.
+   - **Cloudflare R2** (`src/lib/r2.ts`): avatar uploads via `/api/auth/upload-avatar`. Env vars: `CLOUDFLARE_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET_NAME`, `R2_PUBLIC_URL`.
+
+**Critical**: server components must use the fs-based store functions (`readEvents()`, `getForm()`) directly — never call relative `fetch("/api/…")` from a server component, as it fails without a running server. Only client components or route handlers use `fetch`.
+
+### Mock data (`src/lib/mock-data.ts`) — public content only
+
+Large file — read it before assuming a shape. Key entities and derived helpers:
 - **Events** (`MockEvent`): optional `image` (cycled from a small photo pool in `public/eventex`), optional `gallery` (3 images per event, also cycled), optional `merchandise`, and a required `organizer` (plain string name — there is no separate organizers table). `EventCard`/detail pages fall back to a CSS gradient + ghost icon when `image` is unset — keep both paths working when touching event rendering. `getEventBySlug()`, `allEvents` (merged popular + upcoming).
 - **Organizers** are *derived*, not stored: `getOrganizers()` groups `allEvents` by `slugify(event.organizer)` on every call (no caching) to build `{ slug, name, events, categories }`. `getOrganizerBySlug()` filters that same derived list. To add/rename an organizer, just change the `organizer` string on events — there's nothing else to update.
 - **Merchandise** (`MockMerchandise`, optionally `bestSeller`) lives nested inside events. `getAllMerchandise()` flattens every event's merchandise into `MerchandiseListing[]` (adds `eventTitle`/`eventSlug`); `getBestSellerMerchandise()` filters that for the shop's featured slider. Product icons resolve through the shared `merchIcons` map in `src/lib/merch-icons.ts`.
@@ -77,3 +94,30 @@ At least one file under `public/` was a video muxed into a file named `*.svg` (N
 ### Legal pages
 
 `src/components/legal/legal-page.tsx` exports `LegalPage`/`LegalSection` wrappers shared by `src/app/privacy/page.tsx` and `src/app/terms/page.tsx` — use them for any new legal/static content page instead of rebuilding the layout.
+
+### Organizer dashboard
+
+All organizer dashboard pages live under `src/app/organizer/dashboard/` and share `DashboardShell` (sidebar + header) via `src/app/organizer/dashboard/layout.tsx`. The shell is in `src/components/organizer/dashboard/shell.tsx` and includes:
+- Collapsible sidebar (state persisted to `localStorage` under key `"sidebar-collapsed"`)
+- Nav badge counts (currently hardcoded — not live)
+- `SupportDialog` triggered from the sidebar's support card
+
+Key dashboard routes:
+| Route | Component | Notes |
+|---|---|---|
+| `/organizer/dashboard` | `overview-page.tsx` | Summary cards + recent events |
+| `/organizer/dashboard/events` | `events-page.tsx` + `events-table.tsx` | Dropdown menu per row (fixed-position to escape `overflow:hidden`) |
+| `/organizer/dashboard/events/[slug]` | `event-buyers-page.tsx` | Buyers list with pagination |
+| `/organizer/dashboard/events/[slug]/form` | `form-builder-page.tsx` | Drag-free form builder; saves to `data/forms.json` via `/api/forms/[slug]` |
+| `/organizer/dashboard/events/[slug]/registrations` | `registrations-page.tsx` | Reads `/api/registrations/[slug]` |
+| `/organizer/dashboard/stats` | `stats-page.tsx` | Recharts (area, bar, pie) — fetches `/api/events` client-side |
+| `/organizer/dashboard/finance` | `finance/page.tsx` | Static mock data |
+| `/organizer/dashboard/package` | `package-tab.tsx` | Pricing table |
+
+### Form builder multi-step
+
+`FormConfig.steps?: FormStep[]` + `FormField.stepId?: string` implement multi-step forms with backward compatibility: `steps: undefined` = single-step, `stepId: undefined` on a field = belongs to first step. The public registration page at `/events/[slug]/register` reads the form config server-side via `getForm()` and renders `EventRegisterForm` which handles per-step validation with a `useRef<HTMLFormElement>` + `reportValidity()`.
+
+### Dropdown that escapes `overflow:hidden`
+
+`EventMenu` in `events-table.tsx` uses `position: fixed` + `getBoundingClientRect()` to render the dropdown outside the table's overflow container. The `mousedown` close handler checks both the trigger `btnRef` and the menu `menuRef` before closing — omitting the menu ref check causes the menu to close before click events on items fire.

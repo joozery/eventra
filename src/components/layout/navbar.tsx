@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Award, LogOut, Menu, Receipt, Search, Ticket, User, X } from "lucide-react";
+import { Award, CalendarPlus, LayoutDashboard, LogOut, Menu, Receipt, Search, Ticket, User, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { LanguageSwitcher } from "@/components/layout/language-switcher";
 import { useLocale } from "@/components/providers/locale-provider";
@@ -159,6 +159,23 @@ export function Navbar() {
                         ใบประกาศนียบัตรของฉัน
                       </Link>
                       <div className="my-1 border-t border-border" />
+                      <Link
+                        href="/organizer/dashboard"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-foreground hover:bg-muted"
+                      >
+                        <LayoutDashboard className="size-4 text-muted-foreground" />
+                        แดชบอร์ดผู้จัด
+                      </Link>
+                      <Link
+                        href="/organizer/events/create"
+                        onClick={() => setUserMenuOpen(false)}
+                        className="flex items-center gap-2 rounded-lg px-3 py-2 text-sm text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+                      >
+                        <CalendarPlus className="size-4" />
+                        สร้างงานของฉัน
+                      </Link>
+                      <div className="my-1 border-t border-border" />
                       <button
                         type="button"
                         onClick={handleLogout}
@@ -283,6 +300,22 @@ export function Navbar() {
                 >
                   <Award className="size-4 text-muted-foreground" />
                   ใบประกาศนียบัตรของฉัน
+                </Link>
+                <Link
+                  href="/organizer/dashboard"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-foreground hover:bg-muted"
+                >
+                  <LayoutDashboard className="size-4 text-muted-foreground" />
+                  แดชบอร์ดผู้จัด
+                </Link>
+                <Link
+                  href="/organizer/events/create"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2 rounded-lg px-3 py-2.5 text-sm font-medium text-indigo-700 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30"
+                >
+                  <CalendarPlus className="size-4" />
+                  สร้างงานของฉัน
                 </Link>
                 <button
                   type="button"

@@ -20,7 +20,9 @@ import {
   MessageCircle,
   Link2,
   Users,
+  Ticket,
 } from "lucide-react";
+import NextLink from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -100,7 +102,7 @@ function PhoneInput({
       {open && (
         <>
           <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
-          <div className="absolute left-0 top-full z-40 mt-1 max-h-56 w-52 overflow-y-auto rounded-xl border border-border bg-card shadow-lg shadow-black/5">
+          <div className="absolute left-0 top-full z-40 mt-1 max-h-56 w-52 overflow-y-auto rounded-md border border-border bg-card shadow-lg shadow-black/5">
             {DIAL_CODES.map((d) => (
               <button
                 key={d.code}
@@ -153,7 +155,7 @@ const THAI_PROVINCES = [
 
 function SuccessBanner({ message }: { message: string }) {
   return (
-    <div className="flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400">
+    <div className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-400">
       <CheckCircle2 className="size-4 shrink-0" />
       {message}
     </div>
@@ -323,9 +325,9 @@ export function AccountClient() {
         <div className="h-48 animate-pulse bg-muted" />
         <div className="mx-auto max-w-4xl px-4 py-8 sm:px-6">
           <div className="flex flex-col gap-4 lg:flex-row">
-            <div className="h-32 w-full animate-pulse rounded-2xl bg-muted lg:w-48" />
+            <div className="h-32 w-full animate-pulse rounded-lg bg-muted lg:w-48" />
             <div className="flex-1 space-y-3">
-              {[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-2xl bg-muted" />)}
+              {[...Array(4)].map((_, i) => <div key={i} className="h-20 animate-pulse rounded-lg bg-muted" />)}
             </div>
           </div>
         </div>
@@ -346,9 +348,7 @@ export function AccountClient() {
     <div className="min-h-screen bg-muted/30">
 
       {/* Hero */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-600">
-        <div className="pointer-events-none absolute -top-20 -right-20 size-64 rounded-full bg-white/10 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-12 -left-8 size-48 rounded-full bg-white/10 blur-3xl" />
+      <div className="border-b border-border bg-background">
         <div className="mx-auto max-w-4xl px-4 pb-6 pt-8 sm:px-6">
           <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-5">
             <div className="relative shrink-0">
@@ -356,17 +356,17 @@ export function AccountClient() {
                 type="button"
                 onClick={() => fileRef.current?.click()}
                 disabled={avatarUploading}
-                className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-2xl ring-4 ring-white/30 transition-opacity hover:opacity-90 sm:size-[88px]"
+                className="group relative flex size-20 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-border transition-opacity hover:opacity-80 sm:size-[88px]"
               >
                 {user.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={user.avatarUrl} alt={user.name} className="size-full object-cover" />
                 ) : (
-                  <span className="size-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-3xl font-bold text-white sm:text-4xl">
+                  <span className="size-full bg-muted flex items-center justify-center text-3xl font-bold text-foreground sm:text-4xl">
                     {initials}
                   </span>
                 )}
-                <span className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                <span className="absolute inset-0 flex items-center justify-center bg-black/30 opacity-0 transition-opacity group-hover:opacity-100">
                   {avatarUploading
                     ? <span className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
                     : <Camera className="size-5 text-white" />}
@@ -375,10 +375,10 @@ export function AccountClient() {
               <input ref={fileRef} type="file" accept="image/*" className="sr-only" onChange={handleAvatarChange} />
             </div>
             <div className="text-center sm:text-left">
-              <h1 className="text-xl font-bold text-white sm:text-2xl">{user.name}</h1>
-              <p className="mt-0.5 text-sm text-indigo-100">{user.email}</p>
+              <h1 className="text-xl font-bold text-foreground sm:text-2xl">{user.name}</h1>
+              <p className="mt-0.5 text-sm text-muted-foreground">{user.email}</p>
               {memberSince && (
-                <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-indigo-200 sm:justify-start">
+                <p className="mt-1 flex items-center justify-center gap-1.5 text-xs text-muted-foreground sm:justify-start">
                   <CalendarDays className="size-3" />สมาชิกตั้งแต่ {memberSince}
                 </p>
               )}
@@ -393,14 +393,14 @@ export function AccountClient() {
 
           {/* Sidebar */}
           <aside className="w-full shrink-0 lg:w-48">
-            <nav className="flex flex-row gap-1 rounded-2xl border border-border bg-card p-1.5 lg:flex-col">
+            <nav className="flex flex-row gap-1 rounded-lg border border-border bg-card p-1.5 lg:flex-col">
               {tabs.map(({ key, label, icon: Icon }) => (
                 <button
                   key={key}
                   type="button"
                   onClick={() => setTab(key)}
                   className={cn(
-                    "flex flex-1 items-center justify-center gap-2 rounded-xl px-3 py-2 text-sm font-medium transition-colors lg:justify-start",
+                    "flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors lg:justify-start",
                     tab === key
                       ? "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/40 dark:text-indigo-300"
                       : "text-muted-foreground hover:bg-muted hover:text-foreground"
@@ -410,6 +410,13 @@ export function AccountClient() {
                   <span className="hidden sm:inline lg:inline">{label}</span>
                 </button>
               ))}
+              <NextLink
+                href="/account/tickets"
+                className="flex flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-muted hover:text-foreground lg:justify-start"
+              >
+                <Ticket className="size-4 shrink-0" />
+                <span className="hidden sm:inline lg:inline">บัตรของฉัน</span>
+              </NextLink>
             </nav>
           </aside>
 
@@ -420,7 +427,7 @@ export function AccountClient() {
               <form onSubmit={handleProfileSave} className="flex flex-col gap-4">
 
                 {/* ข้อมูลพื้นฐาน */}
-                <div className="rounded-2xl border border-border bg-card p-5">
+                <div className="rounded-lg border border-border bg-card p-5">
                   <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
                     <User className="size-3.5 text-indigo-600" />ข้อมูลพื้นฐาน
                   </h2>
@@ -476,7 +483,7 @@ export function AccountClient() {
                 </div>
 
                 {/* Social */}
-                <div className="rounded-2xl border border-border bg-card p-5">
+                <div className="rounded-lg border border-border bg-card p-5">
                   <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold text-foreground">
                     <MessageCircle className="size-3.5 text-green-600" />ช่องทางติดต่อ
                   </h2>
@@ -500,7 +507,7 @@ export function AccountClient() {
                 {profileError && <p className="text-sm text-red-500">{profileError}</p>}
 
                 <div className="flex justify-end">
-                  <Button type="submit" disabled={profileSaving} className="h-9 rounded-xl bg-gradient-to-r from-indigo-600 to-purple-600 px-5 text-sm text-white hover:opacity-90 hover:bg-none">
+                  <Button type="submit" disabled={profileSaving} className="h-9 rounded-md bg-gradient-to-r from-indigo-600 to-purple-600 px-5 text-sm text-white hover:opacity-90 hover:bg-none">
                     {profileSaving ? "กำลังบันทึก..." : "บันทึกการเปลี่ยนแปลง"}
                   </Button>
                 </div>
@@ -509,7 +516,7 @@ export function AccountClient() {
 
             {tab === "security" && (
               <form onSubmit={handlePasswordSave} className="flex flex-col gap-4">
-                <div className="rounded-2xl border border-border bg-card p-5">
+                <div className="rounded-lg border border-border bg-card p-5">
                   <h2 className="mb-1 flex items-center gap-2 text-sm font-semibold text-foreground">
                     <KeyRound className="size-3.5 text-amber-600" />เปลี่ยนรหัสผ่าน
                   </h2>
@@ -550,7 +557,7 @@ export function AccountClient() {
                   <Button
                     type="submit"
                     disabled={passwordSaving || !currentPassword || !newPassword || !confirmPassword}
-                    className="h-9 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-5 text-sm text-white hover:opacity-90 hover:bg-none"
+                    className="h-9 rounded-md bg-gradient-to-r from-amber-500 to-orange-500 px-5 text-sm text-white hover:opacity-90 hover:bg-none"
                   >
                     {passwordSaving ? "กำลังเปลี่ยน..." : "เปลี่ยนรหัสผ่าน"}
                   </Button>

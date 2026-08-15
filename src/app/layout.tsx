@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter, Noto_Sans_Thai, Geist_Mono } from "next/font/google";
 import { LocaleProvider } from "@/components/providers/locale-provider";
 import { CookieConsent } from "@/components/layout/cookie-consent";
+import { ToastProvider } from "@/components/ui/toast-provider";
 import "./globals.css";
 
 const inter = Inter({
@@ -23,9 +24,13 @@ export const metadata: Metadata = {
   title: "EVENTRA — Discover. Create. Experience.",
   description:
     "EVENTRA คือแพลตฟอร์ม Event Technology สำหรับค้นหา สร้าง จัดการ และเข้าร่วมงานอีเวนต์ในระบบเดียว",
+  icons: {
+    icon: "/logo/iconbrowser.svg",
+    shortcut: "/logo/iconbrowser.svg",
+  },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
       lang="th"
@@ -33,8 +38,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         <LocaleProvider>
-          {children}
-          <CookieConsent />
+          <ToastProvider>
+            {children}
+            <CookieConsent />
+          </ToastProvider>
         </LocaleProvider>
       </body>
     </html>
